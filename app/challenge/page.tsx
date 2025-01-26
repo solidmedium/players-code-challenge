@@ -31,6 +31,15 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { EllipsisIcon } from 'lucide-react'
 
 const NFL: Sport = {
   name: 'NFL',
@@ -148,7 +157,9 @@ export default function Home() {
             <SelectItem value="Soccer">Soccer</SelectItem>
           </SelectContent>
         </Select>
-        <Button type="submit">Add a Player</Button>
+        <Button className="hover:bg-slate-600" type="submit">
+          Add a Player
+        </Button>
       </div>
 
       <Form {...form}>
@@ -253,11 +264,11 @@ export default function Home() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-lg">Position</TableHead>
+                  <TableHead>Position</TableHead>
                   <TableHead>Starter</TableHead>
                   <TableHead>Second</TableHead>
                   <TableHead>Third</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="flex justify-end">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -267,19 +278,28 @@ export default function Home() {
                     <TableCell>{entry.players[0]?.name || '-'}</TableCell>
                     <TableCell>{entry.players[1]?.name || '-'}</TableCell>
                     <TableCell>{entry.players[2]?.name || '-'}</TableCell>
-                    <TableCell>
-                      {entry.players.map((player, index) => (
-                        <Button
-                          key={player.id}
-                          variant="destructive"
-                          size="sm"
-                          className="mb-2 mr-2"
-                          onClick={() =>
-                            handleRemovePlayer(chart.sport, entry.position, player.id)
-                          }>
-                          Remove {index === 0 ? 'Starter' : index === 1 ? 'Second' : 'Third'}
-                        </Button>
-                      ))}
+                    <TableCell className="flex justify-end">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <EllipsisIcon />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Remove</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          {entry.players.map((player, index) => (
+                            <DropdownMenuItem className="p-0" key={player.id}>
+                              <Button
+                                variant="link"
+                                size="sm"
+                                onClick={() =>
+                                  handleRemovePlayer(chart.sport, entry.position, player.id)
+                                }>
+                                {index === 0 ? 'Starter' : index === 1 ? 'Second' : 'Third'}{' '}
+                              </Button>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </TableCell>
                   </TableRow>
                 ))}
