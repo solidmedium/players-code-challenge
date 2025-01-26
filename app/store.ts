@@ -22,11 +22,14 @@ export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
       const chart = state.depthCharts.find(chart => chart.sport.name === sport.name)!.chart
       const posEntry = chart.find(entry => entry.position === position)
       if (!posEntry) {
+        console.log('Adding new position entry')
         chart.push({ position, players: [player] })
       } else {
         if (spot !== undefined) {
+          console.log('Adding player at specific spot')
           posEntry.players.splice(spot, 0, player)
         } else {
+          console.log('Adding player to end of list')
           posEntry.players.push(player)
         }
       }

@@ -17,3 +17,8 @@ export interface DepthChart {
   sport: Sport
   chart: DepthChartEntry[]
 }
+
+export interface Spots {
+  label: string
+  value: string
+}
