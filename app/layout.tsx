@@ -30,7 +30,7 @@ export default function RootLayout({
         <>
           <div className="flex min-h-screen flex-col">
             <header>
-              <Link href="/" className="flex items-center justify-center bg-primary px-6 py-4">
+              <Link href="/" className="bg-primary flex items-center justify-center px-6 py-4">
                 <Image src="/sportsbet_logo_large.png" alt="Players Logo" width={150} height={32} />
               </Link>
             </header>

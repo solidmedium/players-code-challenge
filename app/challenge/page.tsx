@@ -42,6 +42,7 @@ import {
 import { EllipsisIcon } from 'lucide-react'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -109,6 +110,7 @@ const generateRandomPlayers = (count: number): Player[] => {
 export default function Home() {
   const [selectedSport, setSelectedSport] = useState<Sport>(NFL)
   const { addPlayer, removePlayer, getFullDepthChart } = useDepthChartStore()
+  const [open, setOpen] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -143,6 +145,7 @@ export default function Home() {
     const sport = values.sport === 'NFL' ? NFL : Soccer
     addPlayer(sport, values.position, player, values.spot)
     form.reset()
+    setOpen(false)
   }
 
   const handleRemovePlayer = (sport: Sport, position: string, playerId: string) => {
@@ -151,7 +154,6 @@ export default function Home() {
 
   const depthChart = getFullDepthChart(selectedSport)
 
-  console.log('selected: ', selectedSport)
   return (
     <div className="container mx-auto p-4">
       <h1 className="mb-4 text-2xl font-bold">Depth Chart Manager</h1>
@@ -165,7 +167,7 @@ export default function Home() {
             <SelectItem value="Soccer">Soccer</SelectItem>
           </SelectContent>
         </Select>
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="hover:bg-slate-600">Add a Player</Button>
           </DialogTrigger>
@@ -265,8 +267,7 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
-
-                  <Button variant={'outline'} type="submit">
+                  <Button className="hover:bg-slate-600" type="submit">
                     Add a Player
                   </Button>
                 </form>
@@ -315,7 +316,6 @@ export default function Home() {
                                 onClick={() =>
                                   handleRemovePlayer(chart.sport, entry.position, player.id)
                                 }>
-                                {/* {index === 0 ? 'Starter' : index === 1 ? 'Second' : 'Third'}{' '} */}
                                 {player.name}
                               </Button>
                             </DropdownMenuItem>

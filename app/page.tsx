@@ -20,7 +20,7 @@ export default function Home() {
       <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
         <a
           href="/challenge"
-          className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-primary focus:text-primary">
+          className="hover:text-primary focus:text-primary mt-6 w-96 rounded-xl border p-6 text-left">
           <h3 className="text-2xl font-bold">Go to Code Challenge &rarr;</h3>
           <p className="mt-4 text-xl">
             A detailed look at <em>Depth Charts</em> using Next.js Framework and ShadCN/UI.
