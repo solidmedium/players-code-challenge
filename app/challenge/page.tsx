@@ -40,6 +40,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { EllipsisIcon } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 const NFL: Sport = {
   name: 'NFL',
@@ -116,7 +124,7 @@ export default function Home() {
     const initializeDepthCharts = () => {
       ;[NFL, Soccer].forEach(sport => {
         sport.positions.forEach(position => {
-          const players = generateRandomPlayers(Math.floor(Math.random() * 3) + 1)
+          const players = generateRandomPlayers(Math.floor(Math.random() * 4) + 1)
           players.forEach((player, index) => {
             addPlayer(sport, position, player, index)
           })
@@ -157,105 +165,116 @@ export default function Home() {
             <SelectItem value="Soccer">Soccer</SelectItem>
           </SelectContent>
         </Select>
-        <Button className="hover:bg-slate-600" type="submit">
-          Add a Player
-        </Button>
-      </div>
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="sport"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Sport</FormLabel>
-                <Select
-                  onValueChange={value => {
-                    field.onChange(value)
-                    setSelectedSport(value === 'NFL' ? NFL : Soccer)
-                    form.setValue('position', '')
-                  }}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a sport" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="NFL">NFL</SelectItem>
-                    <SelectItem value="Soccer">Soccer</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="position"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Position</FormLabel>
-                <Select onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a position" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {selectedSport.positions.map(pos => (
-                      <SelectItem key={pos} value={pos}>
-                        {pos}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="playerName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Player Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Enter player name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="spot"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Spot (optional)</FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    placeholder="Enter spot number"
-                    {...field}
-                    onChange={e =>
-                      field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value))
-                    }
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button className="hover:bg-slate-600">Add a Player</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add a Player</DialogTitle>
+              <DialogDescription>
+                Use the form below to add a player to the depth chart.
+              </DialogDescription>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="sport"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sport</FormLabel>
+                        <Select
+                          onValueChange={value => {
+                            field.onChange(value)
+                            setSelectedSport(value === 'NFL' ? NFL : Soccer)
+                            form.setValue('position', '')
+                          }}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a sport" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="NFL">NFL</SelectItem>
+                            <SelectItem value="Soccer">Soccer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
-          <Button variant={'outline'} type="submit">
-            Add a Player
-          </Button>
-        </form>
-      </Form>
+                  <FormField
+                    control={form.control}
+                    name="position"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Position</FormLabel>
+                        <Select onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a position" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {selectedSport.positions.map(pos => (
+                              <SelectItem key={pos} value={pos}>
+                                {pos}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="playerName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Player Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter player name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="spot"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Spot (optional)</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="Enter spot number"
+                            {...field}
+                            onChange={e =>
+                              field.onChange(
+                                e.target.value === '' ? undefined : parseInt(e.target.value),
+                              )
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button variant={'outline'} type="submit">
+                    Add a Player
+                  </Button>
+                </form>
+              </Form>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <div className="mt-8">
         <h2 className="mb-2 text-xl font-semibold">{selectedSport.name} Depth Chart</h2>
@@ -268,7 +287,8 @@ export default function Home() {
                   <TableHead>Starter</TableHead>
                   <TableHead>Second</TableHead>
                   <TableHead>Third</TableHead>
-                  <TableHead className="flex justify-end">Actions</TableHead>
+                  <TableHead>Forth</TableHead>
+                  <TableHead className="flex items-center justify-end">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -278,6 +298,7 @@ export default function Home() {
                     <TableCell>{entry.players[0]?.name || '-'}</TableCell>
                     <TableCell>{entry.players[1]?.name || '-'}</TableCell>
                     <TableCell>{entry.players[2]?.name || '-'}</TableCell>
+                    <TableCell>{entry.players[3]?.name || '-'}</TableCell>
                     <TableCell className="flex justify-end">
                       <DropdownMenu>
                         <DropdownMenuTrigger>
@@ -294,7 +315,8 @@ export default function Home() {
                                 onClick={() =>
                                   handleRemovePlayer(chart.sport, entry.position, player.id)
                                 }>
-                                {index === 0 ? 'Starter' : index === 1 ? 'Second' : 'Third'}{' '}
+                                {/* {index === 0 ? 'Starter' : index === 1 ? 'Second' : 'Third'}{' '} */}
+                                {player.name}
                               </Button>
                             </DropdownMenuItem>
                           ))}
