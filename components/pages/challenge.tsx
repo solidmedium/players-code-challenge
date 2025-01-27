@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -116,7 +116,8 @@ export default function Challenge() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const player: Player = { id: Date.now().toString(), name: values.playerName }
     const sport = values.sport === 'NFL' ? NFL : Soccer
-    addPlayer(sport, values.position, player, values.spot)
+    // Convert spot to number to fix type cross over issue
+    addPlayer(sport, values.position, player, Number(values.spot))
     form.reset()
     setOpen(false)
   }
