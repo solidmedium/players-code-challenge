@@ -24,7 +24,7 @@ export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
   },
 
   addPlayer: (sport, player, spot) => {
-    const { position } = player
+    const position = player.position || ''
     set(state => {
       const sportChart = state.depthCharts.find(chart => chart.sport.name === player.sport)
       if (!sportChart) {
