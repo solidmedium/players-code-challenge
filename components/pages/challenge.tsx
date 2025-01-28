@@ -18,6 +18,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -72,9 +73,7 @@ const spots: Spots[] = [
 ]
 
 const formSchema = z.object({
-  sport: z.enum(['NFL', 'Soccer'], {
-    required_error: 'You must select a sport.',
-  }),
+  sport: z.string().min(2, 'Sport name must be at least 2 characters.'),
   position: z.string().min(1, 'You must select a position.'),
   playerName: z
     .string()
@@ -83,13 +82,17 @@ const formSchema = z.object({
   spot: z.string().optional(),
 })
 
+const formSportSchema = z.object({
+  sport: z.string().min(2, 'Sport name must be at least 2 characters.'),
+  positions: z.string().min(1, 'Positions must be at least 1 character.'),
+})
+
 const PlayerStatsDialog = ({ player }: { player: PlayerStats }) => {
   const [open, setOpen] = useState(false)
   if (!player.performance) {
     return <p className="text-sm">-</p>
   }
   const { performance } = player
-  console.log('player', player)
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>{player.name}</DialogTrigger>
@@ -121,13 +124,6 @@ const PlayerStatsDialog = ({ player }: { player: PlayerStats }) => {
             </div>
           </Card>
         </div>
-
-        {/* <Card>
-          <CardHeader>
-            <CardTitle>Performance Metrics</CardTitle>
-          </CardHeader>
-          <CardContent></CardContent>
-        </Card> */}
       </DialogContent>
     </Dialog>
   )
@@ -137,6 +133,7 @@ export default function Challenge() {
   const [selectedSport, setSelectedSport] = useState<Sport>(sports[0])
   const { addPlayer, removePlayer, getFullDepthChart } = useDepthChartStore()
   const [open, setOpen] = useState(false)
+  const [openSport, setOpenSport] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -145,6 +142,14 @@ export default function Challenge() {
       position: '',
       playerName: '',
       spot: '4',
+    },
+  })
+
+  const sportForm = useForm<z.infer<typeof formSportSchema>>({
+    resolver: zodResolver(formSportSchema),
+    defaultValues: {
+      sport: '',
+      positions: '',
     },
   })
 
@@ -176,13 +181,24 @@ export default function Challenge() {
     setSelectedSport(filteredSport[0])
   }
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onPlayerSubmit = (values: z.infer<typeof formSchema>) => {
     const player: Player = { id: Date.now().toString(), name: values.playerName }
     const sport = values.sport === 'NFL' ? NFL : soccer
     // Convert spot to number to fix type cross over issue
     addPlayer(sport, values.position, player, Number(values.spot))
     form.reset()
     setOpen(false)
+  }
+
+  const onSportSubmit = (values: z.infer<typeof formSportSchema>) => {
+    const sport: Sport = {
+      name: values.sport,
+      positions: values.positions.split(',').map(p => p.trim()),
+    }
+    sports.push(sport)
+    setSelectedSport(sport)
+    sportForm.reset()
+    setOpenSport(false)
   }
 
   const handleRemovePlayer = (sport: Sport, position: string, playerId: string) => {
@@ -194,16 +210,73 @@ export default function Challenge() {
   return (
     <div className="container mx-auto mt-6 p-4 md:mt-12">
       <h1 className="mb-4 text-2xl font-bold">Depth Chart Manager</h1>
-      <div className="mb-4 flex items-center space-x-4">
+      <div className="mb-4 flex items-center justify-between space-x-4">
         <Select onValueChange={value => handleSelectedSport(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="NFL">NFL</SelectItem>
-            <SelectItem value="Soccer">Soccer</SelectItem>
+            {sports.map(sport => (
+              <SelectItem key={sport.name} value={sport.name}>
+                {sport.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+        <Dialog open={openSport} onOpenChange={setOpenSport}>
+          <DialogTrigger asChild>
+            <Button className="font-bold hover:bg-slate-600">
+              Add a Sport <PlusCircleIcon />{' '}
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add a Sport</DialogTitle>
+              <DialogDescription>
+                Use the form below to add a sport to the depth chart.
+              </DialogDescription>
+              <Form {...sportForm}>
+                <form onSubmit={sportForm.handleSubmit(onSportSubmit)} className="space-y-4">
+                  <FormField
+                    control={sportForm.control}
+                    name="sport"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Sport Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter Sport name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={sportForm.control}
+                    name="positions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Positions</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Enter positions" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Enter positions separated by commas. E.g. QB, WR, RB
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <Button className="w-full hover:bg-slate-600" type="submit">
+                    <ArrowRight /> Add a Sport
+                  </Button>
+                </form>
+              </Form>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button className="font-bold hover:bg-slate-600">
@@ -217,7 +290,7 @@ export default function Challenge() {
                 Use the form below to add a player to the depth chart.
               </DialogDescription>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onPlayerSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="sport"
@@ -227,7 +300,7 @@ export default function Challenge() {
                         <Select
                           onValueChange={value => {
                             field.onChange(value)
-                            setSelectedSport(value === 'NFL' ? NFL : Soccer)
+                            handleSelectedSport(value)
                             form.setValue('position', '')
                           }}>
                           <FormControl>
@@ -236,8 +309,11 @@ export default function Challenge() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="NFL">NFL</SelectItem>
-                            <SelectItem value="Soccer">Soccer</SelectItem>
+                            {sports.map(sport => (
+                              <SelectItem key={sport.name} value={sport.name}>
+                                {sport.name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />

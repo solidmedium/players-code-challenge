@@ -3,6 +3,7 @@ import { Player, DepthChart, Sport } from './types'
 
 interface DepthChartStore {
   depthCharts: DepthChart[]
+  addSport: (sport: Sport) => void
   addPlayer: (sport: Sport, position: string, player: Player, spot?: number) => void
   removePlayer: (sport: Sport, position: string, playerId: string) => void
   getFullDepthChart: (sport?: Sport) => DepthChart[]
@@ -11,6 +12,16 @@ interface DepthChartStore {
 
 export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
   depthCharts: [],
+
+  addSport: sport => {
+    set(state => {
+      const sportChart = state.depthCharts.find(chart => chart.sport.name === sport.name)
+      if (!sportChart) {
+        state.depthCharts.push({ sport, chart: [] })
+      }
+      return { depthCharts: [...state.depthCharts] }
+    })
+  },
 
   addPlayer: (sport, position, player, spot) => {
     set(state => {
@@ -22,14 +33,11 @@ export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
       const chart = state.depthCharts.find(chart => chart.sport.name === sport.name)!.chart
       const posEntry = chart.find(entry => entry.position === position)
       if (!posEntry) {
-        console.log('Adding new position entry')
         chart.push({ position, players: [player] })
       } else {
         if (spot !== undefined) {
-          console.log('Adding player at specific spot')
           posEntry.players.splice(spot, 0, player)
         } else {
-          console.log('Adding player to end of list')
           posEntry.players.push(player)
         }
       }
