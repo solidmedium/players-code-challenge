@@ -78,3 +78,17 @@ sports-performance-dashboard/
 ├── package.json
 ├── README.md
 └── tsconfig.json
+
+### Built With
+
+- [Next.js](https://nextjs.org/) - The React Framework
+- [ShadCN UI](https://ui.shadcn.com/) - UI Component Library
+
+### License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+### Acknowledgments
+
+- ShadCN UI for the beautiful components
+- Vercel for hosting the live demo
