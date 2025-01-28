@@ -60,23 +60,41 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 sports-performance-dashboard/
 ├── app/
+
 │ ├── layout.tsx
+
 │ └── page.tsx
+
 │ └── globals.css
+
 ├── components/
+
 │ ├── elements/
+
 │ │ └── players-stats-dialog.tsx
+
 │ ├── pages/
+
 │ │ └── challenge.tsx
+
 │ ├── ui/
+
 │ │ └── card.tsx
+
 ├── lib/
+
 │ └── utils.ts
+
 ├── public/
+
 ├── .gitignore
+
 ├── next.config.js
+
 ├── package.json
+
 ├── README.md
+
 └── tsconfig.json
 
 ### Built With
