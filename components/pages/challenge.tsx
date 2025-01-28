@@ -99,7 +99,7 @@ export default function Challenge() {
       sport: 'NFL',
       position: '',
       playerName: '',
-      spot: '4',
+      spot: undefined,
     },
   })
 
@@ -140,14 +140,13 @@ export default function Challenge() {
   }
 
   const onPlayerSubmit = (values: z.infer<typeof formSchema>) => {
-    const player: Player = { id: Date.now().toString(), name: values.playerName }
-    console.log('values', values)
     handleSelectedSport(values.sport)
-    // Convert spot to number to fix type cross over issue
     addPlayer(
       selectedSport,
+      // Generate random stats for new players
       generateRandomPlayerStats(values.playerName, selectedSport.name, values.position),
-      Number(values.spot),
+      // Convert spot to number to fix type cross over issue
+      values.spot ? parseInt(values.spot) : undefined,
     )
     form.reset()
     setOpen(false)
@@ -169,8 +168,6 @@ export default function Challenge() {
   }
 
   const depthChart = getFullDepthChart(selectedSport)
-
-  console.log('depthChart', depthChart)
 
   return (
     <div className="container mx-auto mt-6 p-4 md:mt-12">
