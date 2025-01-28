@@ -1,10 +1,10 @@
 import { create } from 'zustand'
-import { Player, DepthChart, Sport } from './types'
+import { Player, DepthChart, Sport, PlayerStats } from './types'
 
 interface DepthChartStore {
   depthCharts: DepthChart[]
   addSport: (sport: Sport) => void
-  addPlayer: (sport: Sport, position: string, player: Player, spot?: number) => void
+  addPlayer: (sport: Sport, player: PlayerStats, spot?: number) => void
   removePlayer: (sport: Sport, position: string, playerId: string) => void
   getFullDepthChart: (sport?: Sport) => DepthChart[]
   getPlayersBelow: (sport: Sport, position: string, playerId: string) => Player[]
@@ -23,15 +23,16 @@ export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
     })
   },
 
-  addPlayer: (sport, position, player, spot) => {
+  addPlayer: (sport, player, spot) => {
+    const { position } = player
     set(state => {
-      const sportChart = state.depthCharts.find(chart => chart.sport.name === sport.name)
+      const sportChart = state.depthCharts.find(chart => chart.sport.name === player.sport)
       if (!sportChart) {
         const newChart: DepthChart = { sport, chart: [] }
         state.depthCharts.push(newChart)
       }
-      const chart = state.depthCharts.find(chart => chart.sport.name === sport.name)!.chart
-      const posEntry = chart.find(entry => entry.position === position)
+      const chart = state.depthCharts.find(chart => chart.sport.name === player.sport)!.chart
+      const posEntry = chart.find(entry => entry.position === player.position)
       if (!posEntry) {
         chart.push({ position, players: [player] })
       } else {
