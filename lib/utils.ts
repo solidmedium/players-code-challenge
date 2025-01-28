@@ -1,4 +1,4 @@
-import { Player } from '@/app/types'
+import { PlayerStats } from '@/app/types'
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const generateRandomName = () => {
+const generateRandomName = (): string => {
   const firstNames = [
     'John',
     'Mike',
@@ -34,11 +34,57 @@ export const generateRandomName = () => {
   return `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`
 }
 
-export const generateRandomPlayers = (count: number): Player[] => {
-  return Array.from({ length: count }, () => ({
+const generateRandomStat = (min: number, max: number): number => {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+const generateRandomPlayerStats = (
+  name?: string,
+  sport?: string,
+  position?: string,
+): PlayerStats => {
+  const totalActions = generateRandomStat(50, 150)
+  const successfulActions = generateRandomStat(0, totalActions)
+  const successRate = Number(((successfulActions / totalActions) * 100).toFixed(1))
+
+  const conversionsAttempted = generateRandomStat(5, 15)
+  const conversionsSuccessful = generateRandomStat(0, conversionsAttempted)
+  const conversionRate = Number(((conversionsSuccessful / conversionsAttempted) * 100).toFixed(1))
+
+  return {
     id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-    name: generateRandomName(),
-  }))
+    name: name ? name : generateRandomName(),
+    sport: sport ? sport : 'Generic Sport',
+    position: position ? position : 'Generic Position',
+    performance: {
+      totalActions,
+      successfulActions,
+      successRate,
+      contestsWon: generateRandomStat(10, 30),
+      conversions: {
+        attempted: conversionsAttempted,
+        successful: conversionsSuccessful,
+        rate: conversionRate,
+      },
+      distanceCovered: {
+        total: generateRandomStat(5000, 12000),
+        highIntensity: generateRandomStat(1000, 3000),
+      },
+      possession: {
+        timeInSeconds: generateRandomStat(200, 600),
+        percentageOfGame: generateRandomStat(10, 40),
+      },
+    },
+  }
+}
+
+export const generateRandomPlayers = (
+  count: number,
+  name?: string,
+  sport?: string,
+  position?: string,
+): PlayerStats[] => {
+  return Array.from({ length: count }, () => generateRandomPlayerStats(name, sport, position))
 }
 
 export const getTailwindColor = () => {

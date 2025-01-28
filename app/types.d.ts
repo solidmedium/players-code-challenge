@@ -22,3 +22,29 @@ export interface Spots {
   label: string
   value: string
 }
+
+export interface PlayerStats {
+  id: string
+  name: string
+  sport?: string
+  position?: string
+  performance?: {
+    totalActions: number
+    successfulActions: number
+    successRate: number
+    contestsWon: number
+    conversions: {
+      attempted: number
+      successful: number
+      rate: number
+    }
+    distanceCovered: {
+      total: number
+      highIntensity: number
+    }
+    possession: {
+      timeInSeconds: number
+      percentageOfGame: number
+    }
+  }
+}

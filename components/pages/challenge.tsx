@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { useDepthChartStore } from '@/app/store'
-import { Player, Sport, Spots } from '@/app/types'
+import { Player, PlayerStats, Sport, Spots } from '@/app/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -50,16 +50,19 @@ import {
 } from '@/components/ui/dialog'
 import { generateRandomPlayers } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
+import { Card } from '@/components/ui/card'
 
 const NFL: Sport = {
   name: 'NFL',
   positions: ['QB', 'WR', 'RB', 'TE', 'K', 'P', 'KR', 'PR'],
 }
 
-const Soccer: Sport = {
+const soccer: Sport = {
   name: 'Soccer',
   positions: ['GK', 'RB', 'LB', 'CDM', 'CAM', 'RW', 'LW', 'SS', 'ST'],
 }
+
+const sports: Sport[] = [NFL, soccer]
 
 const spots: Spots[] = [
   { label: 'Starter', value: '0' },
@@ -80,8 +83,58 @@ const formSchema = z.object({
   spot: z.string().optional(),
 })
 
+const PlayerStatsDialog = ({ player }: { player: PlayerStats }) => {
+  const [open, setOpen] = useState(false)
+  if (!player.performance) {
+    return <p className="text-sm">-</p>
+  }
+  const { performance } = player
+  console.log('player', player)
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>{player.name}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{player.name}</DialogTitle>
+          <DialogDescription>
+            Key statistics for {player.name} in the {player.sport} league.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
+          <Card>
+            <div className="flex justify-between p-3">
+              Total
+              <br /> Actions
+              <p className="text-3xl font-bold">{performance?.totalActions}</p>
+            </div>
+          </Card>
+          <Card>
+            <div className="flex justify-between p-3">
+              Successful Actions
+              <p className="text-3xl font-bold">{performance?.successfulActions}</p>
+            </div>
+          </Card>
+          <Card>
+            <div className="flex justify-between p-3">
+              Success Rate (%)
+              <p className="text-3xl font-bold">{performance?.successRate}</p>
+            </div>
+          </Card>
+        </div>
+
+        {/* <Card>
+          <CardHeader>
+            <CardTitle>Performance Metrics</CardTitle>
+          </CardHeader>
+          <CardContent></CardContent>
+        </Card> */}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
 export default function Challenge() {
-  const [selectedSport, setSelectedSport] = useState<Sport>(NFL)
+  const [selectedSport, setSelectedSport] = useState<Sport>(sports[0])
   const { addPlayer, removePlayer, getFullDepthChart } = useDepthChartStore()
   const [open, setOpen] = useState(false)
 
@@ -97,9 +150,14 @@ export default function Challenge() {
 
   useEffect(() => {
     const initializeDepthCharts = () => {
-      ;[NFL, Soccer].forEach(sport => {
+      sports.forEach(sport => {
         sport.positions.forEach(position => {
-          const players = generateRandomPlayers(Math.floor(Math.random() * 4) + 1)
+          const players = generateRandomPlayers(
+            Math.floor(Math.random() * 4) + 1,
+            '',
+            sport.name,
+            position,
+          )
           players.forEach((player, index) => {
             addPlayer(sport, position, player, index)
           })
@@ -113,9 +171,14 @@ export default function Challenge() {
     }
   }, [addPlayer, getFullDepthChart])
 
+  const handleSelectedSport = (value: string) => {
+    const filteredSport = sports.filter(sport => sport.name === value)
+    setSelectedSport(filteredSport[0])
+  }
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const player: Player = { id: Date.now().toString(), name: values.playerName }
-    const sport = values.sport === 'NFL' ? NFL : Soccer
+    const sport = values.sport === 'NFL' ? NFL : soccer
     // Convert spot to number to fix type cross over issue
     addPlayer(sport, values.position, player, Number(values.spot))
     form.reset()
@@ -132,7 +195,7 @@ export default function Challenge() {
     <div className="container mx-auto mt-6 p-4 md:mt-12">
       <h1 className="mb-4 text-2xl font-bold">Depth Chart Manager</h1>
       <div className="mb-4 flex items-center space-x-4">
-        <Select onValueChange={value => setSelectedSport(value === 'NFL' ? NFL : Soccer)}>
+        <Select onValueChange={value => handleSelectedSport(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
@@ -276,10 +339,34 @@ export default function Challenge() {
                     <TableCell className="font-bold">
                       <Badge className="hover:bg-primary">{entry.position}</Badge>
                     </TableCell>
-                    <TableCell>{entry.players[0]?.name || '-'}</TableCell>
-                    <TableCell>{entry.players[1]?.name || '-'}</TableCell>
-                    <TableCell>{entry.players[2]?.name || '-'}</TableCell>
-                    <TableCell>{entry.players[3]?.name || '-'}</TableCell>
+                    <TableCell>
+                      {entry.players[0]?.name ? (
+                        <PlayerStatsDialog player={entry.players[0]} />
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {entry.players[1]?.name ? (
+                        <PlayerStatsDialog player={entry.players[1]} />
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {entry.players[2]?.name ? (
+                        <PlayerStatsDialog player={entry.players[2]} />
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {entry.players[3]?.name ? (
+                        <PlayerStatsDialog player={entry.players[3]} />
+                      ) : (
+                        '-'
+                      )}
+                    </TableCell>
                     <TableCell className="flex justify-end">
                       <DropdownMenu>
                         <DropdownMenuTrigger>
