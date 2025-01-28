@@ -24,12 +24,13 @@ git clone https://github.com/solidmedium/players-code-challenge.git
 ```
 
 2. Navigate to the project directory:
+
 ```bash
 cd players-code-challenge
 ```
 
 3. Install dependencies:
-This project uses `pnpm` but you can use any of the below
+   This project uses `pnpm` but you can use any of the below
 
 ```bash
 npm i
@@ -40,6 +41,7 @@ pnpm i
 # or
 bun i
 ```
+
 4. Run the development server:
 
 ```bash
