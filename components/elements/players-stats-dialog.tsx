@@ -12,9 +12,6 @@ import { Card } from '../ui/card'
 
 const PlayerStatsDialog = ({ player }: { player: PlayerStats }) => {
   const [open, setOpen] = useState(false)
-  if (!player.performance) {
-    return <p className="text-sm">-</p>
-  }
   const { performance } = player
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -39,16 +39,13 @@ export const useDepthChartStore = create<DepthChartStore>((set, get) => ({
       const posEntry = chart.find(entry => entry.position === player.position)
       if (!posEntry) {
         // Adds position to the depth chart if it doesn't exist (new sports only)
-        console.log(`Position ${position} does not exist in the depth chart`)
         chart.push({ position, players: [player] })
       } else {
         if (spot !== undefined) {
           // Insert player at specific spot
-          console.log(`Inserting player at spot ${spot}`)
           posEntry.players.splice(spot, 0, player)
         } else {
           // Adds player to the end of the list
-          console.log(`Adding player to the end of the list`)
           posEntry.players.push(player)
         }
       }
