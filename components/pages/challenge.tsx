@@ -173,13 +173,18 @@ export default function Challenge() {
     <div className="container mx-auto mt-6 p-4 md:mt-12">
       <h1 className="mb-4 text-2xl font-bold">Depth Chart Manager</h1>
       <div className="mb-4 flex items-center justify-between space-x-4">
-        <Select onValueChange={value => handleSelectedSport(value)}>
+        <Select
+          defaultValue={selectedSport.name}
+          onValueChange={value => handleSelectedSport(value)}>
           <SelectTrigger>
             <SelectValue placeholder="Select a sport" />
           </SelectTrigger>
           <SelectContent>
             {sports.map(sport => (
-              <SelectItem key={sport.name} value={sport.name}>
+              <SelectItem
+                key={sport.name}
+                value={sport.name}
+                defaultChecked={sport.name === selectedSport.name}>
                 {sport.name}
               </SelectItem>
             ))}
@@ -260,6 +265,7 @@ export default function Challenge() {
                       <FormItem>
                         <FormLabel>Sport</FormLabel>
                         <Select
+                          defaultValue={selectedSport.name}
                           onValueChange={value => {
                             field.onChange(value)
                             handleSelectedSport(value)
