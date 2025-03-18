@@ -140,7 +140,7 @@ export default function Challenge() {
   }
 
   const onPlayerSubmit = (values: z.infer<typeof formSchema>) => {
-    handleSelectedSport(values.sport)
+    handleSelectedSport(selectedSport.name)
     addPlayer(
       selectedSport,
       // Generate random stats for new players
@@ -181,10 +181,7 @@ export default function Challenge() {
           </SelectTrigger>
           <SelectContent>
             {sports.map(sport => (
-              <SelectItem
-                key={sport.name}
-                value={sport.name}
-                defaultChecked={sport.name === selectedSport.name}>
+              <SelectItem key={sport.name} value={sport.name}>
                 {sport.name}
               </SelectItem>
             ))}
