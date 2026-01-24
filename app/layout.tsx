@@ -30,8 +30,8 @@ export default function RootLayout({
         <>
           <div className="flex min-h-screen flex-col">
             <header>
-              <Link href="/" className="flex items-center justify-center bg-primary px-6 py-4">
-                <Image src="/sportsbet_logo_large.png" alt="Players Logo" width={150} height={32} />
+              <Link href="/" className="text-2xl font-bold text-white flex items-center justify-center bg-primary px-6 py-4">
+                Wrenegade Depth Chart{' '}
               </Link>
             </header>
             {children}
